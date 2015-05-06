@@ -25,6 +25,7 @@
 @property (nonatomic, strong) UIImageView *failedImageView;
 @property (nonatomic, strong) UILabel *failedLabel;
 
+@property (nonatomic, assign) BOOL refreshing;
 @end
 
 @implementation NHBottomLoadingView
@@ -52,6 +53,11 @@
                          options:NSKeyValueObservingOptionNew
                          context:nil];
 
+    [self.scrollView addObserver:self
+                      forKeyPath:@"contentOffset"
+                         options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld
+                         context:nil];
+
     [self setState:_viewState];
 }
 
@@ -74,6 +80,24 @@
             self.failedImageView.backgroundColor = newColor;
 
             self.finishedView.backgroundColor = newColor;
+        }
+        else if ([keyPath isEqualToString:@"contentOffset"]) {
+            CGPoint oldValue = [change[NSKeyValueChangeOldKey] CGPointValue];
+            CGPoint newValue = [change[NSKeyValueChangeNewKey] CGPointValue];
+
+            if (!CGPointEqualToPoint(oldValue, newValue)) {
+
+                CGFloat offset = (newValue.y + self.scrollView.bounds.size.height);
+                CGFloat contentHeight = (self.scrollView.contentSize.height - [self viewForCurrentState].bounds.size.height);
+                if (self.viewState == NHBottomLoadingViewStateLoading
+                    && !self.refreshing
+                    && offset >= contentHeight) {
+                    [self startRefreshing];
+                }
+                else if (self.viewState == NHBottomLoadingViewStateFailed) {
+
+                }
+            }
         }
     }
 }
@@ -305,6 +329,22 @@
     return nil;
 }
 
+- (void)startRefreshing {
+    if (self.refreshing) {
+        return;
+    }
+
+    self.refreshing = YES;
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self setState:NHBottomLoadingViewStateFailed];
+    });
+}
+
+- (void)stopRefreshing {
+    self.refreshing = NO;
+}
+
 - (void)setNoResultsTextFont:(UIFont *)noResultsTextFont {
     [self willChangeValueForKey:@"noResultsTextFont"];
     _noResultsTextFont = noResultsTextFont;
@@ -360,6 +400,7 @@
 
 - (void)dealloc {
     [self.scrollView removeObserver:self forKeyPath:@"backgroundColor"];
+    [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
 }
 
 @end

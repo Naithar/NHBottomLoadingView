@@ -33,4 +33,6 @@ typedef NS_ENUM(NSUInteger, NHBottomLoadingViewState) {
 
 - (void)setState:(NHBottomLoadingViewState)state;
 - (void)setState:(NHBottomLoadingViewState)state animated:(BOOL)animated;
+
+- (void)stopRefreshing;
 @end
