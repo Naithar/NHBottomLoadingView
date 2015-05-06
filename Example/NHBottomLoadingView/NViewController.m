@@ -7,9 +7,12 @@
 //
 
 #import "NViewController.h"
+#import <NHBottomLoadingView.h>
 
-@interface NViewController ()
+@interface NViewController ()<UITableViewDelegate, UITableViewDataSource>
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 
+@property (nonatomic, strong) NHBottomLoadingView *bottomView;
 @end
 
 @implementation NViewController
@@ -18,6 +21,12 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+
+    self.bottomView = [[NHBottomLoadingView alloc] initWithScrollView:self.tableView];
+//    self
 }
 
 - (void)didReceiveMemoryWarning
@@ -26,4 +35,15 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 10;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    [self.bottomView setState:NHBottomLoadingViewStateLoading];
+    return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
+
+
+}
 @end
