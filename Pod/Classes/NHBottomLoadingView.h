@@ -16,6 +16,8 @@ typedef NS_ENUM(NSUInteger, NHBottomLoadingViewState) {
     NHBottomLoadingViewStateView
 };
 
+typedef void(^NHBottomLoadingViewBlock)(void);
+
 @interface NHBottomLoadingView : NSObject
 
 @property (nonatomic, readonly, assign) NHBottomLoadingViewState viewState;
@@ -32,7 +34,10 @@ typedef NS_ENUM(NSUInteger, NHBottomLoadingViewState) {
 
 @property (nonatomic, assign) BOOL isLoading;
 
+@property (nonatomic, copy) NHBottomLoadingViewBlock refreshBlock;
+
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView;
+- (instancetype)initWithScrollView:(UIScrollView*)scrollView withBlock:(NHBottomLoadingViewBlock)block;
 
 - (void)setState:(NHBottomLoadingViewState)state;
 - (void)setState:(NHBottomLoadingViewState)state animated:(BOOL)animated;

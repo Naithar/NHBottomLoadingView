@@ -34,10 +34,17 @@
 @implementation NHBottomLoadingView
 
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView {
+    return [self initWithScrollView:scrollView withBlock:nil];
+}
+
+
+- (instancetype)initWithScrollView:(UIScrollView*)scrollView
+                         withBlock:(NHBottomLoadingViewBlock)block {
     self = [super init];
 
     if (self) {
         _scrollView = scrollView;
+        _refreshBlock = block;
         [self commonInit];
     }
     return self;
@@ -404,10 +411,9 @@
 
     self.refreshing = YES;
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self setState:NHBottomLoadingViewStateFailed];
-        [((UITableView*)self.scrollView) reloadData];
-    });
+    if (self.refreshBlock) {
+        self.refreshBlock();
+    }
 }
 
 - (void)stopRefreshing {
