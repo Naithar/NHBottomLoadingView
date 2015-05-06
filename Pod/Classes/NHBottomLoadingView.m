@@ -185,6 +185,8 @@
                                                                    attribute:NSLayoutAttributeRight
                                                                   multiplier:1.0
                                                                     constant:-25]];
+
+    [self.failedView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(refreshTouch:)]];
 }
 
 - (void)updateFailedView {
@@ -238,6 +240,8 @@
                                                                    attribute:NSLayoutAttributeCenterY
                                                                   multiplier:1.0
                                                                     constant:0]];
+
+    [self.noResultsView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(refreshTouch:)]];
 }
 
 - (void)setupLoadingView {
@@ -289,46 +293,27 @@
         return;
     }
 
-    switch (state) {
-        case NHBottomLoadingViewStateLoading:
-            if ([self.scrollView isKindOfClass:[UITableView class]]) {
-                ((UITableView*)self.scrollView).tableFooterView = self.loadingView;
-            }
-            break;
-        case NHBottomLoadingViewStateFinished:
-            if ([self.scrollView isKindOfClass:[UITableView class]]) {
-                ((UITableView*)self.scrollView).tableFooterView = self.finishedView;
-            }
-            break;
-        case NHBottomLoadingViewStateNoResults:
-            if ([self.scrollView isKindOfClass:[UITableView class]]) {
-                ((UITableView*)self.scrollView).tableFooterView = self.noResultsView;
-            }
-            break;
-        case NHBottomLoadingViewStateFailed:
-            [self updateFailedView];
-            if ([self.scrollView isKindOfClass:[UITableView class]]) {
-                ((UITableView*)self.scrollView).tableFooterView = self.failedView;
-            }
-            break;
-        default:
-            break;
-    }
+    self.viewKey = nil;
+    self.viewState = state;
 
     if (animated) {
         [UIView animateWithDuration:0.3
                               delay:0
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
+                             if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                                 ((UITableView*)self.scrollView).tableFooterView = [self viewForCurrentState];
+                             }
                              [self.scrollView layoutIfNeeded];
                          } completion:nil];
     }
     else {
+        if ([self.scrollView isKindOfClass:[UITableView class]]) {
+            ((UITableView*)self.scrollView).tableFooterView = [self viewForCurrentState];
+        }
         [self.scrollView layoutIfNeeded];
     }
 
-    self.viewKey = nil;
-    self.viewState = state;
 }
 
 - (UIView*)viewForCurrentState {
@@ -383,25 +368,33 @@
             [view layoutIfNeeded];
         }
 
-        if ([self.scrollView isKindOfClass:[UITableView class]]) {
-            ((UITableView*)self.scrollView).tableFooterView = view;
-        }
-
         if (animated) {
             [UIView animateWithDuration:0.3
                                   delay:0
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
+                                 if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                                     ((UITableView*)self.scrollView).tableFooterView = view;
+                                 }
                                  [self.scrollView layoutIfNeeded];
                              } completion:nil];
         }
         else {
+            if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                ((UITableView*)self.scrollView).tableFooterView = view;
+            }
             [self.scrollView layoutIfNeeded];
         }
 
         self.viewKey = key;
         self.viewState = NHBottomLoadingViewStateView;
     }
+}
+
+- (void)refreshTouch:(UITapGestureRecognizer*)recognizer {
+    [self stopRefreshing];
+    [self setState:NHBottomLoadingViewStateLoading animated:YES];
+    [self startRefreshing];
 }
 
 - (void)startRefreshing {
@@ -474,6 +467,9 @@
 }
 
 - (void)dealloc {
+    self.refreshBlock = nil;
+    self.viewDictionary = nil;
+    self.viewKey = nil;
     [self.scrollView removeObserver:self forKeyPath:@"backgroundColor"];
     [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
 }

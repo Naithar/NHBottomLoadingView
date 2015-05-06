@@ -25,10 +25,25 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
 
+
+    __weak __typeof(self) weakSelf = self;
+
     self.bottomView = [[NHBottomLoadingView alloc] initWithScrollView:self.tableView];
+    self.bottomView.refreshBlock = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [weakSelf.bottomView stopRefreshing];
+        [weakSelf.bottomView setState:NHBottomLoadingViewStateFailed];
+//            [weakSelf.bottomView setViewWithKey:@"view"];
+        });
+
+    };
+
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 70)];
+    view.backgroundColor = [UIColor redColor];
+
+    [self.bottomView setView:view withHeight:150 forKey:@"view"];
 
     self.tableView.backgroundColor = [UIColor lightGrayColor];
-//    self
 }
 
 - (void)didReceiveMemoryWarning
