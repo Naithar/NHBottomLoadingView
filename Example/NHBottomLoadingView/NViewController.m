@@ -26,6 +26,8 @@
     self.tableView.dataSource = self;
 
     self.bottomView = [[NHBottomLoadingView alloc] initWithScrollView:self.tableView];
+
+    self.tableView.backgroundColor = [UIColor lightGrayColor];
 //    self
 }
 

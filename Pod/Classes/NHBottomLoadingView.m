@@ -47,31 +47,62 @@
     [self setupFailedView];
     [self setupNoResultsView];
 
+    [self.scrollView addObserver:self
+                      forKeyPath:@"backgroundColor"
+                         options:NSKeyValueObservingOptionNew
+                         context:nil];
+
     [self setState:_viewState];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+    if (object == self.scrollView) {
+        if ([keyPath isEqualToString:@"backgroundColor"]) {
+            UIColor *newColor = change[NSKeyValueChangeNewKey];
+
+            self.loadingView.backgroundColor = newColor;
+            self.loadingImageView.backgroundColor = newColor;
+
+            self.noResultsView.backgroundColor = newColor;
+            self.noResultsLabel.backgroundColor = newColor;
+
+            self.failedView.backgroundColor = newColor;
+            self.failedLabel.backgroundColor = newColor;
+            self.failedImageView.backgroundColor = newColor;
+
+            self.finishedView.backgroundColor = newColor;
+        }
+    }
 }
 
 - (void)setupFinishedView {
     self.finishedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 10)];
-    self.finishedView.backgroundColor = [UIColor blackColor];
+    self.finishedView.backgroundColor = self.scrollView.backgroundColor;
 }
 
 - (void)setupFailedView {
     self.failedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 125)];
-    self.failedView.backgroundColor = [UIColor greenColor];
+    self.failedLabel.opaque = YES;
+    self.failedView.backgroundColor = self.scrollView.backgroundColor;
 
     self.failedImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-    self.failedImageView.backgroundColor = [UIColor blueColor];
+    self.failedImageView.opaque = YES;
+    self.failedImageView.backgroundColor = self.scrollView.backgroundColor;
     self.failedImageView.image = [UIImage imageNamed:@"NHBottomView.refresh.png"];
     [self.failedImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     self.failedLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.failedLabel.opaque = YES;
+    self.failedLabel.backgroundColor = self.scrollView.backgroundColor;
     self.failedLabel.numberOfLines = 0;
     self.failedLabel.textAlignment = NSTextAlignmentCenter;
     self.failedLabel.textColor = self.failedTextColor ?: [UIColor blackColor];
     self.failedLabel.font = self.failedTextFont ?: [UIFont systemFontOfSize:17];
-    self.failedLabel.backgroundColor = [UIColor redColor];
     [self.failedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.failedLabel.text = NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
+    self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
 
     [self.failedView addSubview:self.failedImageView];
     [self.failedView addSubview:self.failedLabel];
@@ -120,25 +151,27 @@
     BOOL internetConnection = YES;
 
     if (!internetConnection) {
-        self.failedLabel.text = NSLocalizedStringFromTable(@"defaul.failed-connection", @"NHBottomLoadingView", nil);
+        self.failedLabel.text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"defaul.failed-connection", @"NHBottomLoadingView", nil);
     }
     else {
-        self.failedLabel.text = NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
+        self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
     }
 }
 
 - (void)setupNoResultsView {
     self.noResultsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 50)];
-    self.noResultsView.backgroundColor = [UIColor blueColor];
+    self.noResultsView.opaque = YES;
+    self.noResultsView.backgroundColor = self.scrollView.backgroundColor;
 
     self.noResultsLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.noResultsView.opaque = YES;
     self.noResultsLabel.numberOfLines = 0;
     self.noResultsLabel.textAlignment = NSTextAlignmentCenter;
     [self.noResultsLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.noResultsLabel.backgroundColor = [UIColor grayColor];
+    self.noResultsLabel.backgroundColor = self.scrollView.backgroundColor;
     self.noResultsLabel.textColor = self.noResultsTextColor ?: [UIColor blackColor];
     self.noResultsLabel.font = self.noResultsTextFont ?: [UIFont systemFontOfSize:17];
-    self.noResultsLabel.text = NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
+    self.noResultsLabel.text = self.noResultText ?: NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
 
     [self.noResultsView addSubview:self.noResultsLabel];
 
@@ -169,9 +202,12 @@
 
 - (void)setupLoadingView {
     self.loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 80)];
-    self.loadingView.backgroundColor = [UIColor redColor];
+    self.loadingView.opaque = YES;
+    self.loadingView.backgroundColor = self.scrollView.backgroundColor;
 
     self.loadingImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    self.loadingImageView.opaque = YES;
+    self.loadingImageView.backgroundColor = self.scrollView.backgroundColor;
     self.loadingImageView.backgroundColor = [UIColor greenColor];
     [self.loadingImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.loadingImageView.image = [UIImage imageNamed:@"NHBottomView.loading.png"];
@@ -284,22 +320,46 @@
 }
 
 
--(void)setFailedTextFont:(UIFont *)failedTextFont {
+- (void)setFailedTextFont:(UIFont *)failedTextFont {
     [self willChangeValueForKey:@"failedTextFont"];
     _failedTextFont = failedTextFont;
     self.failedLabel.font = failedTextFont ?: [UIFont systemFontOfSize:17];
     [self didChangeValueForKey:@"failedTextFont"];
 }
 
--(void)setFailedTextColor:(UIColor *)failedTextColor {
+- (void)setFailedTextColor:(UIColor *)failedTextColor {
     [self willChangeValueForKey:@"failedTextColor"];
     _failedTextColor = failedTextColor;
     self.failedLabel.textColor = failedTextColor ?: [UIColor blackColor];
     [self didChangeValueForKey:@"failedTextColor"];
 }
 
+- (void)setNoResultText:(NSString *)noResultText {
+    [self willChangeValueForKey:@"noResultText"];
+    _noResultText = noResultText;
+
+    self.noResultsLabel.text = _noResultText ?: NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
+    [self didChangeValueForKey:@"noResultText"];
+}
+
+- (void)setFailedText:(NSString *)failedText {
+    [self willChangeValueForKey:@"failedText"];
+    _failedText = failedText;
+
+    [self updateFailedView];
+    [self didChangeValueForKey:@"failedText"];
+}
+
+- (void)setFailedNoConnectionText:(NSString *)failedNoConnectionText {
+    [self willChangeValueForKey:@"failedNoConnectionText"];
+    _failedNoConnectionText = failedNoConnectionText;
+
+    [self updateFailedView];
+    [self didChangeValueForKey:@"failedNoConnectionText"];
+}
+
 - (void)dealloc {
-    NSLog(@"dealloc");
+    [self.scrollView removeObserver:self forKeyPath:@"backgroundColor"];
 }
 
 @end
