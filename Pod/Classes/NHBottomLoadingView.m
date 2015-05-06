@@ -16,6 +16,11 @@
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, strong) UIImageView *loadingImageView;
 
+@property (nonatomic, strong) UIView *finishedView;
+
+@property (nonatomic, strong) UIView *noResultsView;
+@property (nonatomic, strong) UILabel *noResultsLabel;
+
 @end
 
 @implementation NHBottomLoadingView
@@ -34,12 +39,66 @@
     _viewState = NHBottomLoadingViewStateLoading;
 
     [self setupLoadingView];
+    [self setupFinishedView];
+    [self setupFailedView];
+    [self setupNoResultsView];
 
     [self setState:_viewState];
 }
 
+- (void)setupFinishedView {
+    self.finishedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 10)];
+    self.finishedView.backgroundColor = [UIColor blackColor];
+}
+
+- (void)setupFailedView {
+
+}
+
+- (void)updateFiledView {
+
+}
+
+- (void)setupNoResultsView {
+    self.noResultsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 50)];
+    self.noResultsLabel.backgroundColor = [UIColor blueColor];
+
+    self.noResultsLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.noResultsLabel.numberOfLines = 0;
+    self.noResultsLabel.textAlignment = NSTextAlignmentCenter;
+    [self.noResultsLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.noResultsLabel.backgroundColor = [UIColor grayColor];
+    self.noResultsLabel.text = NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
+
+    [self.noResultsView addSubview:self.noResultsLabel];
+
+    [self.noResultsView addConstraint:[NSLayoutConstraint constraintWithItem:self.noResultsLabel
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.noResultsView
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                  multiplier:1.0
+                                                                    constant:25]];
+
+    [self.noResultsView addConstraint:[NSLayoutConstraint constraintWithItem:self.noResultsLabel
+                                                                   attribute:NSLayoutAttributeRight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.noResultsView
+                                                                   attribute:NSLayoutAttributeRight
+                                                                  multiplier:1.0
+                                                                    constant:-25]];
+
+    [self.noResultsView addConstraint:[NSLayoutConstraint constraintWithItem:self.noResultsLabel
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.noResultsView
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                  multiplier:1.0
+                                                                    constant:0]];
+}
+
 - (void)setupLoadingView {
-    self.loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 50)];
+    self.loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 80)];
     self.loadingView.backgroundColor = [UIColor redColor];
 
     self.loadingImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -83,11 +142,21 @@
     if (state == NHBottomLoadingViewStateView) {
         return;
     }
-    
+
     switch (state) {
         case NHBottomLoadingViewStateLoading:
             if ([self.scrollView isKindOfClass:[UITableView class]]) {
                 ((UITableView*)self.scrollView).tableFooterView = self.loadingView;
+            }
+            break;
+        case NHBottomLoadingViewStateFinished:
+            if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                ((UITableView*)self.scrollView).tableFooterView = self.finishedView;
+            }
+            break;
+        case NHBottomLoadingViewStateNoResults:
+            if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                ((UITableView*)self.scrollView).tableFooterView = self.noResultsView;
             }
             break;
         default:
@@ -109,11 +178,21 @@
 }
 
 - (UIView*)viewForCurrentState {
+    switch (self.viewState) {
+        case NHBottomLoadingViewStateLoading:
+            return self.loadingView;
+        case NHBottomLoadingViewStateFinished:
+            return self.finishedView;
+        case NHBottomLoadingViewStateNoResults:
+            return self.noResultsView;
+        default:
+            break;
+    }
     return nil;
 }
 
 - (void)dealloc {
-
+    NSLog(@"dealloc");
 }
 
 @end
