@@ -7,6 +7,8 @@
 //
 
 #import "NHBottomLoadingView.h"
+#import <unistd.h>
+#import <netdb.h>
 
 @interface NHBottomLoadingView ()
 
@@ -124,7 +126,7 @@
 }
 
 - (void)setupFailedView {
-    self.failedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 125)];
+    self.failedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 150)];
     self.failedLabel.opaque = YES;
     self.failedView.backgroundColor = self.scrollView.backgroundColor;
 
@@ -168,7 +170,7 @@
                                                                    toItem:self.failedImageView
                                                                 attribute:NSLayoutAttributeBottom
                                                                multiplier:1.0
-                                                                 constant:15]];
+                                                                 constant:10]];
 
     [self.failedView addConstraint:[NSLayoutConstraint constraintWithItem:self.failedLabel
                                                                    attribute:NSLayoutAttributeLeft
@@ -189,8 +191,23 @@
     [self.failedView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(refreshTouch:)]];
 }
 
+//http://stackoverflow.com/questions/8812459/easiest-way-to-detect-internet-connection-on-ios
+-(BOOL)isNetworkAvailable
+{
+    char *hostname;
+    struct hostent *hostinfo;
+    hostname = "google.com";
+    hostinfo = gethostbyname (hostname);
+    if (hostinfo == NULL){
+        return NO;
+    }
+    else{
+        return YES;
+    }
+}
+
 - (void)updateFailedView {
-    BOOL internetConnection = YES;
+    BOOL internetConnection = [self isNetworkAvailable];
 
     if (!internetConnection) {
         self.failedLabel.text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"default.failed-connection", @"NHBottomLoadingView", nil);
@@ -295,6 +312,10 @@
 
     self.viewKey = nil;
     self.viewState = state;
+
+    if (state == NHBottomLoadingViewStateFailed) {
+        [self updateFailedView];
+    }
 
     if (animated) {
         [UIView animateWithDuration:0.3
