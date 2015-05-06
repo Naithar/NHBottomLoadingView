@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'NHBottomLoadingView', :exclusive => true do
+  pod "NHBottomLoadingView", :path => "../"
+end
+
+target 'Tests', :exclusive => true do
+  pod "NHBottomLoadingView", :path => "../"
+
+  pod 'Specta'
+  pod 'Expecta'
+end
