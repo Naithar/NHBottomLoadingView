@@ -142,7 +142,7 @@
     self.failedLabel.textColor = self.failedTextColor ?: [UIColor blackColor];
     self.failedLabel.font = self.failedTextFont ?: [UIFont systemFontOfSize:17];
     [self.failedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
+    self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
 
     [self.failedView addSubview:self.failedImageView];
     [self.failedView addSubview:self.failedLabel];
@@ -193,15 +193,15 @@
     BOOL internetConnection = YES;
 
     if (!internetConnection) {
-        self.failedLabel.text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"defaul.failed-connection", @"NHBottomLoadingView", nil);
+        self.failedLabel.text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"default.failed-connection", @"NHBottomLoadingView", nil);
     }
     else {
-        self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
+        self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
     }
 }
 
 - (void)setupNoResultsView {
-    self.noResultsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 50)];
+    self.noResultsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 60)];
     self.noResultsView.opaque = YES;
     self.noResultsView.backgroundColor = self.scrollView.backgroundColor;
 
