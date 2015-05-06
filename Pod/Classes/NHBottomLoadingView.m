@@ -10,6 +10,9 @@
 
 @interface NHBottomLoadingView ()
 
+@property (nonatomic, strong) NSMutableDictionary *viewDictionary;
+@property (nonatomic, copy) NSString *viewKey;
+
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, assign) NHBottomLoadingViewState viewState;
 
@@ -42,6 +45,8 @@
 
 - (void)commonInit {
     _viewState = NHBottomLoadingViewStateLoading;
+    _viewDictionary = [[NSMutableDictionary alloc] init];
+    _isLoading = YES;
 
     [self setupLoadingView];
     [self setupFinishedView];
@@ -87,14 +92,16 @@
 
             if (!CGPointEqualToPoint(oldValue, newValue)) {
 
-                CGFloat offset = (newValue.y + self.scrollView.bounds.size.height);
-                CGFloat contentHeight = (self.scrollView.contentSize.height - [self viewForCurrentState].bounds.size.height);
-                if (self.viewState == NHBottomLoadingViewStateLoading
+                CGFloat offset = newValue.y + self.scrollView.bounds.size.height;
+                CGFloat contentHeight = self.scrollView.contentSize.height - [self viewForCurrentState].bounds.size.height;
+                if (self.isLoading
+                    && self.viewState == NHBottomLoadingViewStateLoading
                     && !self.refreshing
                     && offset >= contentHeight) {
                     [self startRefreshing];
                 }
-                else if (self.viewState == NHBottomLoadingViewStateFailed
+                else if (self.isLoading
+                         && self.viewState == NHBottomLoadingViewStateFailed
                          && offset <= contentHeight) {
                     [self stopRefreshing];
                     [self setState:NHBottomLoadingViewStateLoading];
@@ -312,6 +319,8 @@
     else {
         [self.scrollView layoutIfNeeded];
     }
+
+    self.viewKey = nil;
     self.viewState = state;
 }
 
@@ -325,10 +334,67 @@
             return self.noResultsView;
         case NHBottomLoadingViewStateFailed:
             return self.failedView;
+        case NHBottomLoadingViewStateView:
+            return self.viewDictionary[self.viewKey][@"view"];
         default:
             break;
     }
     return nil;
+}
+
+- (void)setView:(UIView*)view
+         forKey:(NSString*)key {
+    [self setView:view withHeight:0 forKey:key];
+}
+
+- (void)setView:(UIView*)view
+     withHeight:(CGFloat)height
+         forKey:(NSString*)key {
+    self.viewDictionary[key] = @{
+                                 @"view" : view,
+                                 @"targetHeight" : @(height)
+                                 };
+}
+
+- (void)setViewWithKey:(NSString*)key {
+    [self setViewWithKey:key
+                animated:NO];
+}
+
+- (void)setViewWithKey:(NSString*)key
+              animated:(BOOL)animated {
+    UIView *view = self.viewDictionary[key][@"view"];
+    CGFloat targetHeight = [self.viewDictionary[key][@"targetHeight"] floatValue];
+
+    if (view
+        && ![view isKindOfClass:[NSNull class]]) {
+
+        if (targetHeight > 0) {
+            CGRect viewBounds = view.bounds;
+            viewBounds.size.height = targetHeight;
+            view.bounds = viewBounds;
+            [view layoutIfNeeded];
+        }
+
+        if ([self.scrollView isKindOfClass:[UITableView class]]) {
+            ((UITableView*)self.scrollView).tableFooterView = view;
+        }
+
+        if (animated) {
+            [UIView animateWithDuration:0.3
+                                  delay:0
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^{
+                                 [self.scrollView layoutIfNeeded];
+                             } completion:nil];
+        }
+        else {
+            [self.scrollView layoutIfNeeded];
+        }
+
+        self.viewKey = key;
+        self.viewState = NHBottomLoadingViewStateView;
+    }
 }
 
 - (void)startRefreshing {
