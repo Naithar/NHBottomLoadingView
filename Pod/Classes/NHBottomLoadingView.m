@@ -94,8 +94,10 @@
                     && offset >= contentHeight) {
                     [self startRefreshing];
                 }
-                else if (self.viewState == NHBottomLoadingViewStateFailed) {
-
+                else if (self.viewState == NHBottomLoadingViewStateFailed
+                         && offset <= contentHeight) {
+                    [self stopRefreshing];
+                    [self setState:NHBottomLoadingViewStateLoading];
                 }
             }
         }
@@ -338,6 +340,7 @@
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self setState:NHBottomLoadingViewStateFailed];
+        [((UITableView*)self.scrollView) reloadData];
     });
 }
 
