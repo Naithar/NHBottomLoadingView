@@ -20,6 +20,12 @@ typedef NS_ENUM(NSUInteger, NHBottomLoadingViewState) {
 
 @property (nonatomic, readonly, assign) NHBottomLoadingViewState viewState;
 
+@property (nonatomic, strong) UIColor *noResultsTextColor;
+@property (nonatomic, strong) UIFont *noResultsTextFont;
+
+@property (nonatomic, strong) UIColor *failedTextColor;
+@property (nonatomic, strong) UIFont *failedTextFont;
+
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView;
 
 - (void)setState:(NHBottomLoadingViewState)state;

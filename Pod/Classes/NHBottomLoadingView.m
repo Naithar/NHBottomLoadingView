@@ -67,6 +67,8 @@
     self.failedLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     self.failedLabel.numberOfLines = 0;
     self.failedLabel.textAlignment = NSTextAlignmentCenter;
+    self.failedLabel.textColor = self.failedTextColor ?: [UIColor blackColor];
+    self.failedLabel.font = self.failedTextFont ?: [UIFont systemFontOfSize:17];
     self.failedLabel.backgroundColor = [UIColor redColor];
     [self.failedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.failedLabel.text = NSLocalizedStringFromTable(@"defaul.failed", @"NHBottomLoadingView", nil);
@@ -134,6 +136,8 @@
     self.noResultsLabel.textAlignment = NSTextAlignmentCenter;
     [self.noResultsLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.noResultsLabel.backgroundColor = [UIColor grayColor];
+    self.noResultsLabel.textColor = self.noResultsTextColor ?: [UIColor blackColor];
+    self.noResultsLabel.font = self.noResultsTextFont ?: [UIFont systemFontOfSize:17];
     self.noResultsLabel.text = NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
 
     [self.noResultsView addSubview:self.noResultsLabel];
@@ -263,6 +267,35 @@
             break;
     }
     return nil;
+}
+
+- (void)setNoResultsTextFont:(UIFont *)noResultsTextFont {
+    [self willChangeValueForKey:@"noResultsTextFont"];
+    _noResultsTextFont = noResultsTextFont;
+    self.noResultsLabel.font = noResultsTextFont ?: [UIFont systemFontOfSize:17];
+    [self didChangeValueForKey:@"noResultsTextFont"];
+}
+
+- (void)setNoResultsTextColor:(UIColor *)noResultsTextColor {
+    [self willChangeValueForKey:@"noResultsTextColor"];
+    _noResultsTextColor = noResultsTextColor;
+    self.noResultsLabel.textColor = noResultsTextColor ?: [UIColor blackColor];
+    [self didChangeValueForKey:@"noResultsTextColor"];
+}
+
+
+-(void)setFailedTextFont:(UIFont *)failedTextFont {
+    [self willChangeValueForKey:@"failedTextFont"];
+    _failedTextFont = failedTextFont;
+    self.failedLabel.font = failedTextFont ?: [UIFont systemFontOfSize:17];
+    [self didChangeValueForKey:@"failedTextFont"];
+}
+
+-(void)setFailedTextColor:(UIColor *)failedTextColor {
+    [self willChangeValueForKey:@"failedTextColor"];
+    _failedTextColor = failedTextColor;
+    self.failedLabel.textColor = failedTextColor ?: [UIColor blackColor];
+    [self didChangeValueForKey:@"failedTextColor"];
 }
 
 - (void)dealloc {
