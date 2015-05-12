@@ -269,7 +269,6 @@
     self.loadingImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.loadingImageView.opaque = YES;
     self.loadingImageView.backgroundColor = self.scrollView.backgroundColor;
-    self.loadingImageView.backgroundColor = [UIColor greenColor];
     [self.loadingImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.loadingImageView.image = [UIImage imageNamed:@"NHBottomView.loading.png"];
 
