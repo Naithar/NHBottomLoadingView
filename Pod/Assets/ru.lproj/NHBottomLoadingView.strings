@@ -7,6 +7,7 @@
 */
 
 
-"default.failed" = "Ошибка при загрузке\nНажмите, чтобы повторить";
-"default.failed-connection" = "Нет подключения к сети интернет\nНажмите, чтобы провторить";
+"default.failed" = "Ошибка при загрузке";
+"default.failed-connection" = "Нет подключения к сети интернет;
+"default.subtext" = "Нажмите, чтобы повторить";
 "default.noresults" = "Нет результатов";

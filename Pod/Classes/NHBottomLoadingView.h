@@ -29,8 +29,11 @@ typedef void(^NHBottomLoadingViewBlock)(void);
 
 @property (nonatomic, copy) NSString *failedText;
 @property (nonatomic, copy) NSString *failedNoConnectionText;
+@property (nonatomic, copy) NSString *failedSubtext;
 @property (nonatomic, strong) UIColor *failedTextColor;
 @property (nonatomic, strong) UIFont *failedTextFont;
+@property (nonatomic, strong) UIColor *failedSubtextColor;
+@property (nonatomic, strong) UIFont *failedSubtextFont;
 
 @property (nonatomic, assign) BOOL isLoading;
 

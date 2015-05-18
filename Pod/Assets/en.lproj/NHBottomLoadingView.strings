@@ -7,6 +7,7 @@
 */
 
 
-"default.failed" = "Error occured while loading\nPlease tap to retry";
-"default.failed-connection" = "No internet connection\nPlease tap to retry";
+"default.failed" = "Error occured while loading";
+"default.failed-connection" = "No internet connection";
+"default.subtext" = "Please tap to retry";
 "default.noresults" = "No results";

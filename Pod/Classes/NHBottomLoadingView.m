@@ -141,10 +141,11 @@
     self.failedLabel.backgroundColor = self.scrollView.backgroundColor;
     self.failedLabel.numberOfLines = 0;
     self.failedLabel.textAlignment = NSTextAlignmentCenter;
-    self.failedLabel.textColor = self.failedTextColor ?: [UIColor blackColor];
-    self.failedLabel.font = self.failedTextFont ?: [UIFont systemFontOfSize:17];
+//    self.failedLabel.textColor = self.failedTextColor ?: [UIColor blackColor];
+//    self.failedLabel.font = self.failedTextFont ?: [UIFont systemFontOfSize:17];
     [self.failedLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
+//    self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
+    [self updateFailedView];
 
     [self.failedView addSubview:self.failedImageView];
     [self.failedView addSubview:self.failedLabel];
@@ -209,12 +210,30 @@
 - (void)updateFailedView {
     BOOL internetConnection = [self isNetworkAvailable];
 
+    NSString *text;
+    NSString *subtext = self.failedSubtext ?: NSLocalizedStringFromTable(@"default.subtext", @"NHBottomLoadingView", nil);
+
     if (!internetConnection) {
-        self.failedLabel.text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"default.failed-connection", @"NHBottomLoadingView", nil);
+        text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"default.failed-connection", @"NHBottomLoadingView", nil);
     }
     else {
-        self.failedLabel.text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
+        text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
     }
+
+    NSMutableAttributedString *tempFailedText = [[NSMutableAttributedString alloc] init];
+
+    [tempFailedText appendAttributedString:[[NSAttributedString alloc] initWithString:text attributes:@{
+                                                                                                        NSFontAttributeName : self.failedTextFont ?: [UIFont systemFontOfSize:17],
+                                                                                                        NSForegroundColorAttributeName : self.failedTextColor ?: [UIColor blackColor]
+                                                                                                        }]];
+
+    [tempFailedText appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+
+    [tempFailedText appendAttributedString:[[NSAttributedString alloc] initWithString:subtext attributes:@{
+                                                                                                           NSFontAttributeName : self.failedSubtextFont ?: [UIFont systemFontOfSize:14],
+                                                                                                           NSForegroundColorAttributeName : self.failedSubtextColor ?: [UIColor grayColor]
+                                                                                                           }]];
+    self.failedLabel.attributedText = tempFailedText;
 }
 
 - (void)setupNoResultsView {
@@ -451,15 +470,29 @@
 - (void)setFailedTextFont:(UIFont *)failedTextFont {
     [self willChangeValueForKey:@"failedTextFont"];
     _failedTextFont = failedTextFont;
-    self.failedLabel.font = failedTextFont ?: [UIFont systemFontOfSize:17];
     [self didChangeValueForKey:@"failedTextFont"];
+    [self updateFailedView];
+}
+
+- (void)setFailedSubtextFont:(UIFont *)failedSubtextFont {
+    [self willChangeValueForKey:@"failedSubtextFont"];
+    _failedSubtextFont = failedSubtextFont;
+    [self didChangeValueForKey:@"failedSubtextFont"];
+    [self updateFailedView];
 }
 
 - (void)setFailedTextColor:(UIColor *)failedTextColor {
     [self willChangeValueForKey:@"failedTextColor"];
     _failedTextColor = failedTextColor;
-    self.failedLabel.textColor = failedTextColor ?: [UIColor blackColor];
     [self didChangeValueForKey:@"failedTextColor"];
+    [self updateFailedView];
+}
+
+- (void)setFailedSubtextColor:(UIColor *)failedSubtextColor {
+    [self willChangeValueForKey:@"failedSubtextColor"];
+    _failedSubtextColor = failedSubtextColor;
+    [self didChangeValueForKey:@"failedSubtextColor"];
+    [self updateFailedView];
 }
 
 - (void)setNoResultText:(NSString *)noResultText {
@@ -484,6 +517,14 @@
 
     [self updateFailedView];
     [self didChangeValueForKey:@"failedNoConnectionText"];
+}
+
+- (void)setFailedSubtext:(NSString *)failedSubtext {
+    [self willChangeValueForKey:@"failedSubtext"];
+    _failedSubtext = failedSubtext;
+
+    [self updateFailedView];
+    [self didChangeValueForKey:@"failedSubtext"];
 }
 
 - (void)dealloc {
