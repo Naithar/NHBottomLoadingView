@@ -57,6 +57,8 @@
     _viewDictionary = [[NSMutableDictionary alloc] init];
     _isLoading = YES;
 
+    _loadingOffset = 0;
+
     [self setupLoadingView];
     [self setupFinishedView];
     [self setupFailedView];
@@ -106,7 +108,7 @@
                 if (self.isLoading
                     && self.viewState == NHBottomLoadingViewStateLoading
                     && !self.refreshing
-                    && offset >= contentHeight) {
+                    && offset + self.loadingOffset >= contentHeight) {
                     [self startRefreshing];
                 }
                 else if (self.isLoading

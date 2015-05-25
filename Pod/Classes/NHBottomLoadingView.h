@@ -37,6 +37,8 @@ typedef void(^NHBottomLoadingViewBlock)(void);
 
 @property (nonatomic, assign) BOOL isLoading;
 
+@property (nonatomic, assign) CGFloat loadingOffset;
+
 @property (nonatomic, copy) NHBottomLoadingViewBlock refreshBlock;
 
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView;
