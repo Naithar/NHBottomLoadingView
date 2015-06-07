@@ -33,6 +33,8 @@
 @property (nonatomic, assign) BOOL refreshing;
 
 @property (nonatomic, assign) CGFloat previousContentSize;
+
+@property (nonatomic, assign) NSTimeInterval stateChangeTimestamp;
 @end
 
 @implementation NHBottomLoadingView
@@ -376,6 +378,8 @@
         return;
     }
     
+    self.stateChangeTimestamp = [NSDate date].timeIntervalSince1970;
+    
     self.viewKey = nil;
     self.viewState = state;
     
@@ -384,15 +388,25 @@
     }
     
     if (animated) {
-        [UIView animateWithDuration:0.25
-                              delay:0
-                            options:UIViewAnimationOptionTransitionNone|UIViewAnimationOptionBeginFromCurrentState
-                         animations:^{
-                             if ([self.scrollView isKindOfClass:[UITableView class]]) {
-                                 ((UITableView*)self.scrollView).tableFooterView = [self viewForCurrentState];
-                             }
-                             [self.scrollView layoutIfNeeded];
-                         } completion:nil];
+        
+        
+        if ([self.scrollView isKindOfClass:[UITableView class]]) {
+            NSTimeInterval stateChangeTimestamp = self.stateChangeTimestamp;
+            __weak __typeof(self) weakSelf = self;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                __strong __typeof(weakSelf) strongSelf = weakSelf;
+                
+                if (!strongSelf
+                    || strongSelf.stateChangeTimestamp != stateChangeTimestamp) {
+                    return;
+                }
+                [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
+                    ((UITableView*)strongSelf.scrollView).tableFooterView = [strongSelf viewForCurrentState];
+                } completion:nil];
+            });
+        }
+        
+        [self.scrollView layoutIfNeeded];
     }
     else {
         if ([self.scrollView isKindOfClass:[UITableView class]]) {
@@ -447,6 +461,7 @@
     if (view
         && ![view isKindOfClass:[NSNull class]]) {
         
+        self.stateChangeTimestamp = [NSDate date].timeIntervalSince1970;
         self.viewKey = key;
         self.viewState = NHBottomLoadingViewStateView;
         
@@ -460,15 +475,25 @@
         }
         
         if (animated) {
-            [UIView animateWithDuration:0.25
-                                  delay:0
-                                options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionTransitionNone
-                             animations:^{
-                                 if ([self.scrollView isKindOfClass:[UITableView class]]) {
-                                     ((UITableView*)self.scrollView).tableFooterView = view;
-                                 }
-                                 [self.scrollView layoutIfNeeded];
-                             } completion:nil];
+            if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                NSTimeInterval stateChangeTimestamp = self.stateChangeTimestamp;
+                __weak __typeof(self) weakSelf = self;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    __strong __typeof(weakSelf) strongSelf = weakSelf;
+                    
+                    if (!strongSelf
+                        || strongSelf.stateChangeTimestamp != stateChangeTimestamp) {
+                        return;
+                    }
+                    [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
+                        ((UITableView*)strongSelf.scrollView).tableFooterView = view;
+                    } completion:nil];
+                    
+                });
+                
+            }
+            [self.scrollView layoutIfNeeded];
+            
         }
         else {
             if ([self.scrollView isKindOfClass:[UITableView class]]) {
