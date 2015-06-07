@@ -49,9 +49,11 @@ typedef void(^NHBottomLoadingViewBlock)(void);
 
 - (void)setView:(UIView*)view forKey:(NSString*)key;
 - (void)setView:(UIView*)view withHeight:(CGFloat)height forKey:(NSString*)key;
-- (void)setViewWithKey:(NSString*)key;
-- (void)setViewWithKey:(NSString*)key animated:(BOOL)animated;
+- (UIView*)setViewWithKey:(NSString*)key;
+- (UIView*)setViewWithKey:(NSString*)key animated:(BOOL)animated;
 
+- (void)startRefreshing;
 - (void)stopRefreshing;
+- (UIView*)viewForCurrentState;
 
 @end
