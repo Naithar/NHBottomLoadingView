@@ -43,6 +43,9 @@ typedef void(^NHBottomLoadingViewBlock)(void);
 
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView;
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView withBlock:(NHBottomLoadingViewBlock)block;
+- (instancetype)initWithScrollView:(UIScrollView*)scrollView
+                      withAutoload:(BOOL)autoload
+                         withBlock:(NHBottomLoadingViewBlock)block;
 
 - (void)setState:(NHBottomLoadingViewState)state;
 - (void)setState:(NHBottomLoadingViewState)state animated:(BOOL)animated;

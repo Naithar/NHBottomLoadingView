@@ -46,11 +46,18 @@
 
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView
                          withBlock:(NHBottomLoadingViewBlock)block {
+    return [self initWithScrollView:scrollView withAutoload:YES withBlock:block];
+}
+
+- (instancetype)initWithScrollView:(UIScrollView*)scrollView
+                      withAutoload:(BOOL)autoload
+                         withBlock:(NHBottomLoadingViewBlock)block {
     self = [super init];
     
     if (self) {
         _scrollView = scrollView;
         _refreshBlock = block;
+        _isLoading = autoload;
         [self commonInit];
     }
     return self;
@@ -59,7 +66,6 @@
 - (void)commonInit {
     _viewState = NHBottomLoadingViewStateLoading;
     _viewDictionary = [[NSMutableDictionary alloc] init];
-    _isLoading = YES;
     
     _loadingOffset = 0;
     
@@ -67,6 +73,8 @@
     [self setupFinishedView];
     [self setupFailedView];
     [self setupNoResultsView];
+    
+    self.previousContentSize = self.scrollView.contentSize.height;
     
     [self.scrollView addObserver:self
                       forKeyPath:@"backgroundColor"
@@ -148,7 +156,8 @@
     CGFloat offset = offsetValue + self.scrollView.bounds.size.height;
     CGFloat contentHeight = self.scrollView.contentSize.height - [self viewForCurrentState].bounds.size.height;
     
-    if ((self.previousContentSize != contentHeight || !checkSize)
+    if ((self.previousContentSize != contentHeight
+         || !checkSize)
         && contentHeight > 0) {
         
         if (self.isLoading
@@ -387,6 +396,7 @@
         [self updateFailedView];
     }
     
+    //    self.previousContentSize = self.scrollView.contentSize.height;
     if (animated) {
         
         
@@ -401,16 +411,27 @@
                     return;
                 }
                 [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
+                    
+                    
                     ((UITableView*)strongSelf.scrollView).tableFooterView = [strongSelf viewForCurrentState];
+                    //                    strongSelf.previousContentSize = strongSelf.scrollView.contentSize.height - ((UITableView*)strongSelf.scrollView).tableFooterView.frame.size.height;
+                    [self.scrollView layoutIfNeeded];
                 } completion:nil];
             });
         }
+        else {
+            [self.scrollView layoutIfNeeded];
+        }
         
-        [self.scrollView layoutIfNeeded];
+        
     }
     else {
         if ([self.scrollView isKindOfClass:[UITableView class]]) {
+            
+            
+            
             ((UITableView*)self.scrollView).tableFooterView = [self viewForCurrentState];
+            //            self.previousContentSize = self.scrollView.contentSize.height - ((UITableView*)self.scrollView).tableFooterView.frame.size.height;
         }
         [self.scrollView layoutIfNeeded];
     }
@@ -474,6 +495,7 @@
             view.clipsToBounds = YES;
         }
         
+        //        self.previousContentSize = self.scrollView.contentSize.height;
         if (animated) {
             if ([self.scrollView isKindOfClass:[UITableView class]]) {
                 NSTimeInterval stateChangeTimestamp = self.stateChangeTimestamp;
@@ -486,18 +508,28 @@
                         return;
                     }
                     [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
+                        
+                        
+                        
                         ((UITableView*)strongSelf.scrollView).tableFooterView = view;
+                        //                        strongSelf.previousContentSize = strongSelf.scrollView.contentSize.height - ((UITableView*)strongSelf.scrollView).tableFooterView.frame.size.height;
+                        
+                        [self.scrollView layoutIfNeeded];
                     } completion:nil];
                     
                 });
                 
             }
-            [self.scrollView layoutIfNeeded];
+            else {
+                [self.scrollView layoutIfNeeded];
+            }
             
         }
         else {
             if ([self.scrollView isKindOfClass:[UITableView class]]) {
+                
                 ((UITableView*)self.scrollView).tableFooterView = view;
+                //                self.previousContentSize = self.scrollView.contentSize.height - ((UITableView*)self.scrollView).tableFooterView.frame.size.height;
             }
             [self.scrollView layoutIfNeeded];
         }
