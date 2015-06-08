@@ -488,11 +488,10 @@
         
         if (targetHeight > 0) {
             CGRect viewBounds = view.bounds;
-            viewBounds.size.height = targetHeight;
+            viewBounds.size.height = round(targetHeight);
             view.bounds = viewBounds;
             view.frame = view.bounds;
             [view layoutIfNeeded];
-            view.clipsToBounds = YES;
         }
         
         //        self.previousContentSize = self.scrollView.contentSize.height;
@@ -509,10 +508,7 @@
                     }
                     [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
                         
-                        
-                        
                         ((UITableView*)strongSelf.scrollView).tableFooterView = view;
-                        //                        strongSelf.previousContentSize = strongSelf.scrollView.contentSize.height - ((UITableView*)strongSelf.scrollView).tableFooterView.frame.size.height;
                         
                         [self.scrollView layoutIfNeeded];
                     } completion:nil];
