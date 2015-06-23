@@ -410,13 +410,13 @@
                     || strongSelf.stateChangeTimestamp != stateChangeTimestamp) {
                     return;
                 }
-                [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
-                    
+//                [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
+                
                     
                     ((UITableView*)strongSelf.scrollView).tableFooterView = [strongSelf viewForCurrentState];
                     //                    strongSelf.previousContentSize = strongSelf.scrollView.contentSize.height - ((UITableView*)strongSelf.scrollView).tableFooterView.frame.size.height;
                     [self.scrollView layoutIfNeeded];
-                } completion:nil];
+//                } completion:nil];
             });
         }
         else {
@@ -506,12 +506,12 @@
                         || strongSelf.stateChangeTimestamp != stateChangeTimestamp) {
                         return;
                     }
-                    [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
-                        
+//                    [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationTransitionNone|UIViewAnimationCurveLinear animations:^{
+                    
                         ((UITableView*)strongSelf.scrollView).tableFooterView = view;
                         
                         [self.scrollView layoutIfNeeded];
-                    } completion:nil];
+//                    } completion:nil];
                     
                 });
                 
