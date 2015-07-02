@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "NHBottomLoadingView"
-  s.version          = "0.1.0"
+  s.version          = "0.5.0"
   s.summary          = "Custom view for loading info from bottom of table and collection views"
 #s.description      = <<-DESC
 #                       An optional longer description of NHBottomLoadingView

@@ -10,6 +10,16 @@
 #import <unistd.h>
 #import <netdb.h>
 
+#define image(name) \
+[[UIImage alloc] initWithContentsOfFile: \
+[[NSBundle bundleForClass:[NHBottomLoadingView class]]\
+pathForResource:name ofType:@"png"]]
+
+#define localization(name, table) \
+NSLocalizedStringFromTableInBundle(name, \
+table, \
+[NSBundle bundleForClass:[NHBottomLoadingView class]], nil)
+
 @interface NHBottomLoadingView ()
 
 @property (nonatomic, strong) NSMutableDictionary *viewDictionary;
@@ -40,6 +50,7 @@
 @implementation NHBottomLoadingView
 
 - (instancetype)initWithScrollView:(UIScrollView*)scrollView {
+    
     return [self initWithScrollView:scrollView withBlock:nil];
 }
 
@@ -60,6 +71,7 @@
         _isLoading = autoload;
         [self commonInit];
     }
+    
     return self;
 }
 
@@ -192,7 +204,7 @@
     self.failedImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.failedImageView.opaque = YES;
     self.failedImageView.backgroundColor = self.scrollView.backgroundColor;
-    self.failedImageView.image = [UIImage imageNamed:@"NHBottomView.refresh.png"];
+    self.failedImageView.image = image(@"NHBottomView.refresh");//[UIImage imageNamed:@"NHBottomView.refresh.png"];
     [self.failedImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     self.failedLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -270,13 +282,14 @@
     BOOL internetConnection = [self isNetworkAvailable];
     
     NSString *text;
-    NSString *subtext = self.failedSubtext ?: NSLocalizedStringFromTable(@"default.subtext", @"NHBottomLoadingView", nil);
+    
+    NSString *subtext = self.failedSubtext ?: localization(@"default.subtext", @"NHBottomLoadingView");
     
     if (!internetConnection) {
-        text = self.failedNoConnectionText ?: NSLocalizedStringFromTable(@"default.failed-connection", @"NHBottomLoadingView", nil);
+        text = self.failedNoConnectionText ?: localization(@"default.failed-connection", @"NHBottomLoadingView");
     }
     else {
-        text = self.failedText ?: NSLocalizedStringFromTable(@"default.failed", @"NHBottomLoadingView", nil);
+        text = self.failedText ?: localization(@"default.failed", @"NHBottomLoadingView");
     }
     
     NSMutableAttributedString *tempFailedText = [[NSMutableAttributedString alloc] init];
@@ -308,7 +321,7 @@
     self.noResultsLabel.backgroundColor = self.scrollView.backgroundColor;
     self.noResultsLabel.textColor = self.noResultsTextColor ?: [UIColor blackColor];
     self.noResultsLabel.font = self.noResultsTextFont ?: [UIFont systemFontOfSize:17];
-    self.noResultsLabel.text = self.noResultText ?: NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
+    self.noResultsLabel.text = self.noResultText ?: localization(@"default.noresults", @"NHBottomLoadingView");
     
     [self.noResultsView addSubview:self.noResultsLabel];
     
@@ -348,8 +361,8 @@
     self.loadingImageView.opaque = YES;
     self.loadingImageView.backgroundColor = self.scrollView.backgroundColor;
     [self.loadingImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.loadingImageView.image = [UIImage imageNamed:@"NHBottomView.loading.png"];
     
+    self.loadingImageView.image = image(@"NHBottomView.loading");//[UIImage imageNamed:@"NHBottomView.loading.png"];
     [self.loadingView addSubview:self.loadingImageView];
     
     [self.loadingView addConstraint:[NSLayoutConstraint constraintWithItem:self.loadingImageView
@@ -607,7 +620,7 @@
     [self willChangeValueForKey:@"noResultText"];
     _noResultText = noResultText;
     
-    self.noResultsLabel.text = _noResultText ?: NSLocalizedStringFromTable(@"default.noresults", @"NHBottomLoadingView", nil);
+    self.noResultsLabel.text = _noResultText ?: localization(@"default.noresults", @"NHBottomLoadingView");
     [self didChangeValueForKey:@"noResultText"];
 }
 

@@ -7,7 +7,7 @@
 //
 
 #import "NViewController.h"
-#import <NHBottomLoadingView.h>
+@import NHBottomLoadingView;
 
 @interface NViewController ()<UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
