@@ -11,7 +11,7 @@
 #import <netdb.h>
 
 #define image(name) \
-[[UIImage alloc] initWithContentsOfFile: \
+[UIImage imageWithContentsOfFile: \
 [[NSBundle bundleForClass:[NHBottomLoadingView class]]\
 pathForResource:name ofType:@"png"]]
 
