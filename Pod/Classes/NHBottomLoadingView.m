@@ -648,7 +648,7 @@ table, \
     [self didChangeValueForKey:@"failedSubtext"];
 }
 
-- (void)dealloc {
+- (void)clearObservers {
     self.refreshBlock = nil;
     self.viewDictionary = nil;
     self.viewKey = nil;
@@ -656,6 +656,10 @@ table, \
     [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
     [self.scrollView removeObserver:self forKeyPath:@"contentSize"];
     [self.scrollView removeObserver:self forKeyPath:@"contentInset"];
+}
+
+- (void)dealloc {
+    [self clearObservers];
 }
 
 @end
