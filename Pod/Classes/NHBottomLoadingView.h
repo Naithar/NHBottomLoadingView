@@ -58,6 +58,5 @@ typedef void(^NHBottomLoadingViewBlock)(void);
 - (void)startRefreshing;
 - (void)stopRefreshing;
 - (UIView*)viewForCurrentState;
-- (void)clearObservers;
 
 @end
