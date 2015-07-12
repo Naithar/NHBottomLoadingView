@@ -25,7 +25,7 @@ table, \
 @property (nonatomic, strong) NSMutableDictionary *viewDictionary;
 @property (nonatomic, copy) NSString *viewKey;
 
-@property (nonatomic, weak) UIScrollView *scrollView;
+@property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, assign) NHBottomLoadingViewState viewState;
 
 @property (nonatomic, strong) UIView *loadingView;
