@@ -180,7 +180,8 @@ table, \
         }
         else if (self.isLoading
                  && self.viewState == NHBottomLoadingViewStateFailed
-                 && offset <= contentHeight) {
+                 && offset <= contentHeight
+                 && self.scrollView.contentOffset.y >= 0) {
             [self stopRefreshing];
             [self setState:NHBottomLoadingViewStateLoading];
         }
