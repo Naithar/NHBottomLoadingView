@@ -253,13 +253,16 @@ table, \
                                                                multiplier:1.0
                                                                  constant:25]];
     
-    [self.failedView addConstraint:[NSLayoutConstraint constraintWithItem:self.failedLabel
-                                                                attribute:NSLayoutAttributeRight
-                                                                relatedBy:NSLayoutRelationEqual
-                                                                   toItem:self.failedView
-                                                                attribute:NSLayoutAttributeRight
-                                                               multiplier:1.0
-                                                                 constant:-25]];
+    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:self.failedLabel
+                                                                       attribute:NSLayoutAttributeRight
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:self.failedView
+                                                                       attribute:NSLayoutAttributeRight
+                                                                      multiplier:1.0
+                                                                        constant:-25];
+    
+    rightConstraint.priority = 900;
+    [self.failedView addConstraint:rightConstraint];
     
     [self.failedView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(refreshTouch:)]];
 }
@@ -334,13 +337,15 @@ table, \
                                                                   multiplier:1.0
                                                                     constant:25]];
     
-    [self.noResultsView addConstraint:[NSLayoutConstraint constraintWithItem:self.noResultsLabel
-                                                                   attribute:NSLayoutAttributeRight
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.noResultsView
-                                                                   attribute:NSLayoutAttributeRight
-                                                                  multiplier:1.0
-                                                                    constant:-25]];
+    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:self.noResultsLabel
+                                                                       attribute:NSLayoutAttributeRight
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:self.noResultsView
+                                                                       attribute:NSLayoutAttributeRight
+                                                                      multiplier:1.0
+                                                                        constant:-25];
+    rightConstraint.priority = 900;
+    [self.noResultsView addConstraint:rightConstraint];
     
     [self.noResultsView addConstraint:[NSLayoutConstraint constraintWithItem:self.noResultsLabel
                                                                    attribute:NSLayoutAttributeCenterY
